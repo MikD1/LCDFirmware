@@ -9,6 +9,7 @@
 #define bool char
 #define byte unsigned char
 
+#include <math.h>
 #include <avr/io.h>
 #include <util/delay.h>
 #include "ATMega2560_addresess.h"
@@ -66,6 +67,29 @@ void PutPixel(byte x, byte y)
 
 void AddLine(byte x1, byte y1, byte x2, byte y2)
 {
+    byte lengthX = fabs(x1 - x2);
+    byte lengthY = fabs(y1 - y2);
+
+    byte length = lengthX > lengthY ? lengthX : lengthY;
+    if (length == 0)
+    {
+        PutPixel(x1, y1);
+        return;
+    }
+
+    float dX = (float)(x2 - x1) / length;
+    float dY = (float)(y2 - y1) / length;
+
+    float x = x1;
+    float y = y1;
+
+    ++length;
+    while (--length)
+    {
+        x += dX;
+        y += dY;
+        PutPixel(round(x), round(y));
+    }
 }
 
 void AddCircle(byte x, byte y, byte r)
