@@ -98,7 +98,10 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ATMega2560_addresess.h">
+    <Compile Include="ATMega2560.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Commands.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="LCDFirmware.c">

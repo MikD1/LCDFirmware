@@ -6,28 +6,32 @@
 */
 
 #define F_CPU 12000000
+#define BAUD_RATE ((unsigned int)103)
 #define bool char
 #define byte unsigned char
 
 #include <math.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
-#include "ATMega2560_addresess.h"
+
+#include "Commands.h"
+#include "ATMega2560.h"
 
 typedef enum { CHIP_1, CHIP_2 } Chips;
 typedef enum { DATA, COMMAND } DataTypes;
 
-void Clear(void);
-void PutPixel(byte x, byte y);
-void AddLine(byte x1, byte y1, byte x2, byte y2);
-void AddCircle(byte x, byte y, byte r);
-void Draw(void);
+inline void Clear(void);
+inline void PutPixel(byte x, byte y);
+inline void AddLine(byte x1, byte y1, byte x2, byte y2);
+inline void AddCircle(byte x, byte y, byte r);
+inline void Draw(void);
 
 void InitializePins(void);
 void InitializeLCD(void);
-void SetPage(byte page, Chips chip);
-void SetAddress(byte address, Chips chip);
-void SendData(byte data, Chips chip, DataTypes dataType);
+inline void SetPage(byte page, Chips chip);
+inline void SetAddress(byte address, Chips chip);
+inline void SendData(byte data, Chips chip, DataTypes dataType);
 
 byte Data[8][128];
 
@@ -35,16 +39,19 @@ int main(void)
 {
     InitializePins();
     InitializeLCD();
+    InitializeSerialPort();
     
     Clear();
     Draw();
+    
+    sei();
     
     while (1)
     {
     }
 }
 
-void Clear(void)
+inline void Clear(void)
 {
     for (int i = 0; i < 8; ++i)
     {
@@ -55,7 +62,7 @@ void Clear(void)
     }
 }
 
-void PutPixel(byte x, byte y)
+inline void PutPixel(byte x, byte y)
 {
     if (x > 127 || y > 63)
     {
@@ -65,7 +72,7 @@ void PutPixel(byte x, byte y)
     Data[y / 8][x] |= 1 << (y % 8);
 }
 
-void AddLine(byte x1, byte y1, byte x2, byte y2)
+inline void AddLine(byte x1, byte y1, byte x2, byte y2)
 {
     byte lengthX = fabs(x1 - x2);
     byte lengthY = fabs(y1 - y2);
@@ -92,11 +99,11 @@ void AddLine(byte x1, byte y1, byte x2, byte y2)
     }
 }
 
-void AddCircle(byte x, byte y, byte r)
+inline void AddCircle(byte x, byte y, byte r)
 {
 }
 
-void Draw(void)
+inline void Draw(void)
 {
     for (int i = 0; i < 8; ++i)
     {
@@ -146,19 +153,19 @@ void InitializeLCD(void)
     SetAddress(0, CHIP_2);
 }
 
-void SetPage(byte page, Chips chip)
+inline void SetPage(byte page, Chips chip)
 {
     byte data = 0b10111000 | (0b00000111 & page);
     SendData(data, chip, COMMAND);
 }
 
-void SetAddress(byte address, Chips chip)
+inline void SetAddress(byte address, Chips chip)
 {
     byte data = 0b01000000 | (0b00111111 & address);
     SendData(data, chip, COMMAND);
 }
 
-void SendData(byte data, Chips chip, DataTypes dataType)
+inline void SendData(byte data, Chips chip, DataTypes dataType)
 {
     if (chip == CHIP_1)
     {
@@ -189,4 +196,42 @@ void SendData(byte data, Chips chip, DataTypes dataType)
     E_PORT |= (1 << E_PIN);
     _delay_us(10);
     E_PORT &= ~(1 << E_PIN);
+}
+
+ISR (SERIAL_INTERRUPT)
+{
+    byte val = RecieveSerialByte();
+    
+    switch (val)
+    {
+        case DRAW_COMMAND:
+        {
+            Draw();
+            break;
+        }
+        
+        case CLEAR_COMMAND:
+        {
+            Clear();
+            break;
+        }
+        
+        case PUT_PIXEL_COMMAND:
+        {
+            byte x = RecieveSerialByte();
+            byte y = RecieveSerialByte();
+            PutPixel(x, y);
+            break;
+        }
+        
+        case ADD_LINE_COMMAND:
+        {
+            byte x1 = RecieveSerialByte();
+            byte y1 = RecieveSerialByte();
+            byte x2 = RecieveSerialByte();
+            byte y2 = RecieveSerialByte();
+            AddLine(x1, y1, x2, y2);
+            break;
+        }
+    }
 }
