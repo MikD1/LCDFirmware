@@ -5,9 +5,8 @@
 * Author: Mikhail Doshevsky <m.doshevsky@gmail.com>
 */
 
-#define F_CPU 12000000
-#define BAUD_RATE ((unsigned int)103)
-#define bool char
+#define F_CPU 1000000
+#define BAUD_RATE ((unsigned int)6)
 #define byte unsigned char
 
 #include <math.h>
@@ -16,7 +15,7 @@
 #include <util/delay.h>
 
 #include "Commands.h"
-#include "ATMega2560.h"
+#include "ATMega32a.h"
 
 typedef enum { CHIP_1, CHIP_2 } Chips;
 typedef enum { DATA, COMMAND } DataTypes;

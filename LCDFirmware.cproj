@@ -5,7 +5,7 @@
     <ProjectVersion>6.2</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.C</ToolchainName>
     <ProjectGuid>{1c1cbd50-407b-443a-b549-21d12007d93c}</ProjectGuid>
-    <avrdevice>ATmega2560</avrdevice>
+    <avrdevice>ATmega32A</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
     <Language>C</Language>
@@ -99,6 +99,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ATMega2560.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMega32a.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Commands.h">
