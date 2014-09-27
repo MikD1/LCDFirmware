@@ -5,7 +5,7 @@
 * Author: Mikhail Doshevsky <m.doshevsky@gmail.com>
 */
 
-#define F_CPU 1000000
+#define F_CPU 12000000
 #define BAUD_RATE ((unsigned int)6)
 #define byte unsigned char
 
@@ -15,7 +15,7 @@
 #include <util/delay.h>
 
 #include "Commands.h"
-#include "ATMega32a.h"
+#include "ATMega2560.h"
 
 typedef enum { CHIP_1, CHIP_2 } Chips;
 typedef enum { DATA, COMMAND } DataTypes;
@@ -40,7 +40,8 @@ int main(void)
     InitializeLCD();
     InitializeSerialPort();
     
-    Clear();
+    AddLine(0, 0, 127, 63);
+    AddLine(127, 0, 0, 63);
     Draw();
     
     sei();
