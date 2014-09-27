@@ -5,8 +5,8 @@
 * Author: Mikhail Doshevsky <m.doshevsky@gmail.com>
 */
 
-#define F_CPU 12000000
-#define BAUD_RATE ((unsigned int)6)
+#define F_CPU 16000000
+#define BAUD_RATE ((unsigned int)103)
 #define byte unsigned char
 
 #include <math.h>
